@@ -1,11 +1,41 @@
 import React from 'react';
 
+import PropTypes from 'prop-types';
+import { GraphQLClient, gql } from 'graphql-request';
 import Box from '../src/components/foundation/layout/Box';
 import Grid from '../src/components/foundation/layout/Grid';
 import Text from '../src/components/foundation/Text';
 import websitePageHOC from '../src/components/wrappers/WebsitePage/hoc';
 
-function AboutScreen() {
+export async function getStaticProps() {
+  const TOKEN = process.env.DATO_READONLY_TOKEN;
+  const DatoCMSURL = 'https://graphql.datocms.com/';
+
+  const client = new GraphQLClient(DatoCMSURL, {
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+    },
+  });
+
+  const query = gql`
+    query {
+      pageSobre {
+        pageTitle
+        pageDescription
+      }
+    }
+  `;
+
+  const messages = await client.request(query);
+
+  return {
+    props: {
+      messages,
+    },
+  };
+}
+
+function AboutScreen({ messages }) {
   return (
     <Box
       display="flex"
@@ -27,12 +57,14 @@ function AboutScreen() {
               tag="h2"
               color="tertiary.main"
             >
-              Página sobre
+              {messages.pageSobre.pageTitle}
             </Text>
 
-            <Box>
-              Conteúdo da página sobre
-            </Box>
+            <Box
+              dangerouslySetInnerHTML={{
+                __html: messages.pageSobre.pageDescription,
+              }}
+            />
 
           </Grid.Col>
         </Grid.Row>
@@ -40,5 +72,10 @@ function AboutScreen() {
     </Box>
   );
 }
+
+AboutScreen.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  messages: PropTypes.object.isRequired,
+};
 
 export default websitePageHOC(AboutScreen);
