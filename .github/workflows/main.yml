@@ -84,5 +84,5 @@ jobs:
 
       - name: Run Integration Tests
         env:
-          DATO_READONLY_KEY: ${{ secrets.DATO_READONLY_TOKEN }}
+          DATO_READONLY_TOKEN: ${{ secrets.DATO_READONLY_TOKEN }}
         run: yarn test:integration:build
