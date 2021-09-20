@@ -8,6 +8,8 @@ import Link from '../../commons/Link';
 import propToStyle from '../../../theme/utils/propToStyle';
 import breakpointsMedia from '../../../theme/utils/breakpointsMedia';
 
+import { WebsitePageContext } from '../../wrappers/WebsitePage/context';
+
 export const TextStyleVariantsMap = {
   smallestException: css`
     font-size: ${({ theme }) => theme.typographyVariants.smallestException.fontSize};
@@ -45,8 +47,14 @@ const TextBase = styled.span`
 `;
 
 export default function Text({
-  tag, variant, href, children, ...props
+  tag, variant, href, children, cmsKey, ...props
 }) {
+  const websitePageContext = React.useContext(WebsitePageContext);
+
+  const componentContent = cmsKey
+    ? websitePageContext.getCMSContent(cmsKey)
+    : children;
+
   if (href) {
     return (
       <TextBase
@@ -56,7 +64,7 @@ export default function Text({
       // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
       >
-        {children}
+        {componentContent}
       </TextBase>
     );
   }
@@ -64,7 +72,7 @@ export default function Text({
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <TextBase as={tag} variant={variant} {...props}>
-      {children}
+      {componentContent}
     </TextBase>
   );
 }
@@ -77,6 +85,7 @@ Text.propTypes = {
   // para ser mais restritivo
   variant: PropTypes.string,
   children: PropTypes.node,
+  cmsKey: PropTypes.string,
 };
 
 Text.defaultProps = {
@@ -84,4 +93,5 @@ Text.defaultProps = {
   variant: 'paragraph1',
   children: null,
   href: '',
+  cmsKey: undefined,
 };
