@@ -10,4 +10,5 @@ module.exports = {
     '<rootDir>/dist/',
   ],
   testEnvironment: 'jsdom',
+  globalSetup: '<rootDir>/test.env.js',
 };
